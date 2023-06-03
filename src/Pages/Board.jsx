@@ -8,15 +8,20 @@ const Board = () => {
   const setupData = {
     width: 10,
     height: 10,
-    mines: 10,
+    mines: 5,
   };
 
-  const [gameState, setGameStates] = useState("Game ON");
-  const [grid, setGrid] = useState(() => initBoard(setupData));
+  // State variables
+  const [gameState, setGameState] = useState("Game ON"); // Tracks the current game state
+  const [mineCount, setMineCount] = useState(setupData.mines); // Tracks the number of remaining mines
+  const [grid, setGrid] = useState(() => initBoard(setupData)); // Represents the game grid
 
+  // Handles left click on a cell
   const onLeftClick = (event, x, y) => {
     event.preventDefault();
     if (grid[x][y].isRevealed || grid[x][y].isFlagged) return;
+
+    // Updates the grid using the produce function from immer library
     const updatedGrid = produce(grid, (draft) => {
       Object.assign(draft[x][y], { isRevealed: true });
       if (draft[x][y].isEmpty) {
@@ -27,23 +32,40 @@ const Board = () => {
     if (updatedGrid[x][y].isMine) {
       const revealedGrid = showGrid(updatedGrid);
       setGrid(revealedGrid);
-      return setGameStates("Game Over");
+      return setGameState("Game Over");
+    }
+    //Winning strategy
+    const hiddenGrid = updatedGrid.flat().filter((cell) => !cell.isRevealed);
+    if (hiddenGrid.length === setupData.mines) {
+      setGameState("Yay you win 🎉");
+      showEmptyCells();
     }
     setGrid(updatedGrid);
   };
 
+  // Handles right click on a cell
   const onRightClick = (event, x, y) => {
     event.preventDefault();
+    let mineCountPlaceholder = mineCount;
     if (grid[x][y].isRevealed) return;
+
+    // Updates the grid and mine count based on flagging or unflagging a cell
     const updatedGrid = produce(grid, (draft) => {
-      draft[x][y].isFlagged = !draft[x][y].isFlagged;
+      draft[x][y].isFlagged ? (mineCountPlaceholder += 1) : (mineCountPlaceholder -= 1);
+      if (mineCountPlaceholder >= 0 && mineCountPlaceholder <= mineCount + 1) {
+        draft[x][y].isFlagged = !draft[x][y].isFlagged;
+        setMineCount(mineCountPlaceholder);
+      }
     });
+
     setGrid(updatedGrid);
   };
 
-  const restGame = (e, setupData) => {
+  // Resets the game
+  const resetGame = (e, setupData) => {
     e.preventDefault();
-    setGameStates("Game ON");
+    setGameState("Game ON");
+    setMineCount(setupData.mineCount);
     setGrid(initBoard(setupData));
   };
 
@@ -51,9 +73,9 @@ const Board = () => {
     <Container component="main" maxWidth="xs">
       <div className="center">
         <h1 style={{ marginBottom: "5px" }}>{gameState}</h1>
-
+        <h3>Mines Remaining: {mineCount}</h3>
         <Button
-          onClick={(e) => restGame(e, setupData)}
+          onClick={(e) => resetGame(e, setupData)}
           variant="outlined"
           style={{ marginBottom: "10px" }}
         >
@@ -69,8 +91,8 @@ const Board = () => {
           {grid.map((row, i) =>
             row.map((col, j) => (
               <Cell
-                onLClick={(e, i, j) => onLeftClick(e, i, j)} //cell passes to board e,i,j to board father function
-                onRClick={(e, i, j) => onRightClick(e, i, j)} //cell passes to board e,i,j to board father function
+                onLClick={(e, i, j) => onLeftClick(e, i, j)}
+                onRClick={(e, i, j) => onRightClick(e, i, j)}
                 key={`${i}-${j}`}
                 col={col}
                 i={i}

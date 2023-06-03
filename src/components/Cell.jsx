@@ -1,6 +1,8 @@
 import React from "react";
 
+// Represents an individual cell in the Mine Sweeper game
 const Cell = ({ col, i, j, onLClick, onRClick }) => {
+  // Retrieves the value to be displayed in the cell
   const getValue = (cellData) => {
     const { isMine, isRevealed, neighbors, isFlagged } = cellData;
     if (!isRevealed) return isFlagged ? "🚩" : "🔲";
@@ -10,12 +12,12 @@ const Cell = ({ col, i, j, onLClick, onRClick }) => {
 
   return (
     <div
-      onClick={(e) => onLClick(e, i, j)} //start to pass upward from this div to father board
-      onContextMenu={(e) => onRClick(e, i, j)}
+      onClick={(e) => onLClick(e, i, j)} // Handles left click event on the cell
+      onContextMenu={(e) => onRClick(e, i, j)} // Handles right click event on the cell
       className="cell"
       data-dimention={`${i}-${j}`}
     >
-      {getValue(col)}
+      {getValue(col)} {/* Renders the value in the cell */}
     </div>
   );
 };

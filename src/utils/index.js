@@ -1,5 +1,6 @@
 import { produce } from "immer";
 
+// Generates random mine positions on the game grid
 export const generateRandomMines = (data = [], height = 0, width = 0, mines = 0) => {
   let minesPlanted = 0;
   while (minesPlanted < mines) {
@@ -13,6 +14,7 @@ export const generateRandomMines = (data = [], height = 0, width = 0, mines = 0)
   return data;
 };
 
+// Retrieves neighboring cells of a given cell
 export const getNeighbors = (i = 0, j = 0, data = [], height = 0, width = 0) => {
   let neighbors = [];
   const surroundings = [
@@ -35,6 +37,7 @@ export const getNeighbors = (i = 0, j = 0, data = [], height = 0, width = 0) => 
   return neighbors;
 };
 
+// Generates the number of neighboring mines for each cell
 export const generateNeighbors = (data = [], height = 0, width = 0) => {
   let dataCopy = data;
   for (let i = 0; i < width; i++) {
@@ -56,8 +59,9 @@ export const generateNeighbors = (data = [], height = 0, width = 0) => {
   return dataCopy;
 };
 
+// Initializes the game board with mines and neighbors
 export const initBoard = (setupData) => {
-  const { width: w, height: h, mines: m } = setupData; //rename
+  const { width: w, height: h, mines: m } = setupData;
   let array2D = Array(w)
     .fill()
     .map((_, indexH) =>
@@ -78,6 +82,7 @@ export const initBoard = (setupData) => {
   return mutatedArrayWithNeighbors;
 };
 
+// Reveals empty cells and their neighboring cells recursively
 export const showEmptyCells = (h, w, x, y, data) => {
   let neighbors = getNeighbors(x, y, data, h, w);
   neighbors.map((cell) => {
@@ -92,6 +97,7 @@ export const showEmptyCells = (h, w, x, y, data) => {
   return data;
 };
 
+// Reveals the entire game grid
 export const showGrid = (data) => {
   const revealedGrid = produce(data, (draft) =>
     draft.map((row) =>

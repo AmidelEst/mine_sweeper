@@ -17,3 +17,6 @@
 - [x] show empty cells
 - [x] reveal the whole grid
 - [x] right click functionality
+- [x] winning strategy
+- [] building a start page
+- [] its all about styling
