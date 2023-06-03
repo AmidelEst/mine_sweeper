@@ -12,4 +12,8 @@
 - [x] adding immer
 - [x] mutate array to new state when cell isRevealed
 - [x] add game state
-- [] add reset game Button
+- [x] reset game Button
+- [x] clean up code
+- [] show empty cells
+- [] reveal the whole grid
+- [] right click funcionality
