@@ -1,27 +1,21 @@
 import React, { useState } from "react";
-import { Container, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { initBoard, showEmptyCells, showGrid } from "../utils";
 import Cell from "../components/Cell";
 import { produce } from "immer";
 
-const Board = () => {
-  const setupData = {
-    width: 10,
-    height: 10,
-    mines: 5,
-  };
-
-  // State variables
+const Board = ({ setupData, setGameStarted }) => {
+  // 1. State variables
   const [gameState, setGameState] = useState("Game ON"); // Tracks the current game state
   const [mineCount, setMineCount] = useState(setupData.mines); // Tracks the number of remaining mines
   const [grid, setGrid] = useState(() => initBoard(setupData)); // Represents the game grid
 
-  // Handles left click on a cell
+  // 2. Handles left click on a cell
   const onLeftClick = (event, x, y) => {
     event.preventDefault();
     if (grid[x][y].isRevealed || grid[x][y].isFlagged) return;
 
-    // Updates the grid using the produce function from immer library
+    //3.  Updates the grid using the produce function from immer library
     const updatedGrid = produce(grid, (draft) => {
       Object.assign(draft[x][y], { isRevealed: true });
       if (draft[x][y].isEmpty) {
@@ -65,44 +59,43 @@ const Board = () => {
   const resetGame = (e, setupData) => {
     e.preventDefault();
     setGameState("Game ON");
-    setMineCount(setupData.mineCount);
+    setMineCount(setupData.mines);
     setGrid(initBoard(setupData));
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <div className="center">
-        <h1 style={{ marginBottom: "5px" }}>{gameState}</h1>
-        <h3>Mines Remaining: {mineCount}</h3>
-        <Button
-          onClick={(e) => resetGame(e, setupData)}
-          variant="outlined"
-          style={{ marginBottom: "10px" }}
-        >
-          Reset the Game
-        </Button>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${setupData.width}, 30px)`,
-            gridTemplateRows: `repeat(${setupData.height}, 30px)`,
-          }}
-        >
-          {grid.map((row, i) =>
-            row.map((col, j) => (
-              <Cell
-                onLClick={(e, i, j) => onLeftClick(e, i, j)}
-                onRClick={(e, i, j) => onRightClick(e, i, j)}
-                key={`${i}-${j}`}
-                col={col}
-                i={i}
-                j={j}
-              />
-            ))
-          )}
-        </div>
+    //HTML PART
+    <div className="center">
+      <h1 style={{ marginBottom: "5px" }}>{gameState}</h1>
+      <h3>Mines Remaining: {mineCount}</h3>
+      <Button
+        onClick={(e) => resetGame(e, setupData)}
+        variant="outlined"
+        style={{ marginBottom: "10px" }}
+      >
+        Reset the Game
+      </Button>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${setupData.width}, 30px)`,
+          gridTemplateRows: `repeat(${setupData.height}, 30px)`,
+        }}
+      >
+        {grid.map((row, i) =>
+          row.map((col, j) => (
+            <Cell
+              onLClick={(e, i, j) => onLeftClick(e, i, j)}
+              onRClick={(e, i, j) => onRightClick(e, i, j)}
+              key={`${i}-${j}`}
+              col={col}
+              i={i}
+              j={j}
+            />
+          ))
+        )}
       </div>
-    </Container>
+    </div>
   );
 };
 
