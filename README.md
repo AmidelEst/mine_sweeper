@@ -14,6 +14,6 @@
 - [x] add game state
 - [x] reset game Button
 - [x] clean up code
-- [] show empty cells
-- [] reveal the whole grid
-- [] right click funcionality
+- [x] show empty cells
+- [x] reveal the whole grid
+- [x] right click functionality

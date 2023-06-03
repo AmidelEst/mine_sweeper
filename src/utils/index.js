@@ -1,3 +1,5 @@
+import { produce } from "immer";
+
 export const generateRandomMines = (data = [], height = 0, width = 0, mines = 0) => {
   let minesPlanted = 0;
   while (minesPlanted < mines) {
@@ -68,9 +70,35 @@ export const initBoard = (setupData) => {
           neighbors: 0,
           isEmpty: false,
           isRevealed: false,
+          isFlagged: false,
         }))
     );
   let mutatedArrayWithMines = generateRandomMines(array2D, w, h, m);
   let mutatedArrayWithNeighbors = generateNeighbors(mutatedArrayWithMines, w, h);
   return mutatedArrayWithNeighbors;
+};
+
+export const showEmptyCells = (h, w, x, y, data) => {
+  let neighbors = getNeighbors(x, y, data, h, w);
+  neighbors.map((cell) => {
+    if (!cell.isRevealed && (cell.isEmpty || !cell.isMine)) {
+      Object.assign(data[cell.x][cell.y], { isRevealed: true });
+      if (cell.isEmpty) {
+        showEmptyCells(h, w, cell.x, cell.y, data);
+      }
+    }
+    return null;
+  });
+  return data;
+};
+
+export const showGrid = (data) => {
+  const revealedGrid = produce(data, (draft) =>
+    draft.map((row) =>
+      row.map((cell) => {
+        return { ...cell, isRevealed: true };
+      })
+    )
+  );
+  return revealedGrid;
 };
